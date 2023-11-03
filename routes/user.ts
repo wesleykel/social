@@ -4,7 +4,8 @@ const secret = process.env.KEY as string;
 
 
 export const user  = new Elysia().group("/user",(app)=>
- app.get("/", async (context) => {
+app 
+.get("/",  (context) => {
     try {
       const accessToken = context.headers.authorization?.replace(
         "Bearer ",
