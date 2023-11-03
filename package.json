@@ -8,10 +8,12 @@
   "dependencies": {
     "elysia": "latest",
     "jose": "^5.0.2",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.11.3"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.4",
+    "@types/pg": "^8.10.7",
     "bun-types": "latest"
   },
   "module": "src/index.js"
