@@ -1,5 +1,12 @@
 import { Pool } from 'pg'
- 
-const pool = new Pool()
- 
-export const query = (text: string, params: any) => pool.query(text, params);
+
+export const pool= new Pool({
+host:"localhost",
+user:"wesley_home",
+database:"wesley_home",
+password:"hello",
+port:5432,
+
+  })
+
+
