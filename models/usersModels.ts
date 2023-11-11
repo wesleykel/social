@@ -1,9 +1,9 @@
 import { pool } from "../db/index";
 
 export const checkUser = async (email: string) => {
-  const query = `SELECT * FROM users WHERE email=${};`;
-  //const value = [email];
-  console.log(value)
+  const query = `SELECT * FROM users WHERE email='$1';`;
+  const value = [email];
+
   pool
     .connect()
     .then(() => console.log("connected successfully"))
