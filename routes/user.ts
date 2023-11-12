@@ -3,12 +3,11 @@ import jwt from "jsonwebtoken";
 import { checkUser } from "../models/usersModels";
 import { pool } from "../db/index";
 
-
 const secret = process.env.KEY as string;
 
 export const user = new Elysia().group("/user", (app) =>
   app
-    .get("/:userEmail", async (context) => {
+    .get("/:userUUID", async (context) => {
       try {
         const accessToken = context.headers.authorization?.replace(
           "Bearer ",
@@ -22,26 +21,27 @@ export const user = new Elysia().group("/user", (app) =>
         });
 
         //see if user has a  record in db
-        const email = context.params.userEmail;
-        const checkUser = `SELECT * FROM users WHERE email='${email}'`;
-        //add user if not exist
-        const addUser = `INSERT into users ("email") VALUES ('${email}')`;
+        const {userUUID} = context.params;
+        const {email, username} = context.query
 
-        //postGres
 
+        const checkUser = `SELECT * FROM users WHERE uuid='${userUUID}'`;
+        const addUser = `INSERT into users ("uuid","email","username") VALUES ($1, $2, $3)`;
+        const values =[userUUID,email,username]
+   
         pool
           .connect()
           .then(() => console.log("connected successfully"))
           .then(() => pool.query(checkUser))
-          .then(function (result) {
-            if (result.rows[0] === undefined) {
-              pool.query(addUser);
-            } 
+          .then((result) => {
+            if (!result.rows[0]) {
+              pool.query(addUser,values);
+            }
           })
 
           .then(() => pool.end);
-       
-        return JSON.stringify({user:"wes"})
+
+        return JSON.stringify({ user: "wes" });
       } catch (error) {
         context.set.status = 401;
 
@@ -77,8 +77,17 @@ export const user = new Elysia().group("/user", (app) =>
         context.set.status = 401;
         return { message: "Unauthorized", status: 401 };
       }
+    }).post("/:userUUID", async (context )=>{
+
+
+
+console.log(context.params.userUUID)
+console.log(context.query.username)
+
+
+
     })
-    .post("/", async (context) => {
+   /* .post("/", async (context) => {
       try {
         const accessToken = context.headers.authorization?.replace(
           "Bearer ",
@@ -116,5 +125,5 @@ export const user = new Elysia().group("/user", (app) =>
 
         return { message: "Unauthorized", status: 401 };
       }
-    })
+    })*/
 );

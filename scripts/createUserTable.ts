@@ -5,6 +5,7 @@ const newTable = async ()=>{
       
    const  query =`CREATE TABLE IF NOT EXISTS users(
       id INT GENERATED ALWAYS AS IDENTITY,
+      uuid varchar(255)
       Age int,
       PostCount int,
       Email varchar(255),
