@@ -1,14 +1,27 @@
 import { pool } from "../db/index";
 
-export const checkUser = async (email: string) => {
-  const query = `SELECT * FROM users WHERE email='$1';`;
-  const value = [email];
+type User = {
+  userUUID: string;
+  email: string|null;
+  username: string|null;
+};
+export const findUser = async ({userUUID, email,username}:User) => {
+  const checkUser:string = `SELECT * FROM users WHERE uuid=$1`;
+  const cuValues=[userUUID]
+  const addUser:string = `INSERT into users ("uuid","email","username") VALUES ($1, $2, $3)  RETURNING "uuid", "email", "username"`;
+  const auValues = [userUUID, email, username];
 
-  pool
-    .connect()
-    .then(() => console.log("connected successfully"))
-    .then(() => pool.query(query, value))
-    .then((result)=>(result.rows[0]))
-    .catch((error) => console.log(error))
-    .finally(() => pool.end);
+  try {
+    await pool.connect();
+    const response = await pool.query(checkUser,cuValues);
+    const data = response.rows[0];
+    if (data) {
+      return data;
+    }
+
+    const newUser = await pool.query(addUser, auValues);
+    return newUser.rows[0];
+  } catch (error) {
+    return error;
+  }
 };
