@@ -1,7 +1,6 @@
 import { Elysia, t } from "elysia";
 import jwt from "jsonwebtoken";
-import { findUser} from "../models/usersModels";
-import { pool } from "../db/index";
+import { findUser, updateUserName } from "../models/usersModels";
 
 const secret = process.env.KEY as string;
 
@@ -23,7 +22,7 @@ export const user = new Elysia().group("/user", (app) =>
         const { userUUID } = context.params;
         const { email, username } = context.query;
 
-        const data = await findUser({userUUID, email, username});
+        const data = await findUser({ userUUID, email, username });
 
         return { data: JSON.stringify(data) };
       } catch (error) {
@@ -32,7 +31,7 @@ export const user = new Elysia().group("/user", (app) =>
         return { message: "Unauthorized", status: 401 };
       }
     })
-    .get("/", async (context) => {
+    .put("/:userUUID", async (context) => {
       try {
         const accessToken = context.headers.authorization?.replace(
           "Bearer ",
@@ -44,19 +43,12 @@ export const user = new Elysia().group("/user", (app) =>
         const verifiedPayload = jwt.verify(accessToken, secret, {
           algorithms: ["RS256"],
         });
-        //context.set.status = 200;
+        const { userUUID } = context.params;
+        const { username } = context.query;
 
-        try {
-          const query = `SELECT * FROM Users WHERE email=djfa`;
-          //const value = [context.params.email];
-          pool
-            .connect()
-            .then(() => console.log("connected successfully"))
-            .then(() => pool.query(query))
-            .then((result) => result.rows[0])
-            .catch((error) => console.log(error))
-            .finally(() => pool.end);
-        } catch (error) {}
+        const data = await updateUserName({ userUUID, username });
+
+        return { data: JSON.stringify(data), status: 200 };
       } catch (error) {
         context.set.status = 401;
         return { message: "Unauthorized", status: 401 };
