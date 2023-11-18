@@ -22,7 +22,7 @@ export const findUser = async ({ userUUID, email, username }: User) => {
     if (data) {
       return data;
     }
-
+    pool.end();
     const newUser = await pool.query(addUser, auValues);
     return newUser.rows[0];
   } catch (error) {
@@ -38,7 +38,11 @@ export const updateUserName = async ({ userUUID, username }: UserUpdate) => {
     await pool.connect();
     const response = await pool.query(updatedUser, values);
     const data = response.rows[0];
-    return data;
+    if (data) {
+      return data;
+    }
+
+    pool.end();
   } catch (error) {
     console.log(error);
   }
