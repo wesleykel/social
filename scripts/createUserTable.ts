@@ -7,6 +7,7 @@ const newTable = async () => {
       Age int,
       PostCount int,
       Email varchar(255),
+      Followers varchar(255)[],
       UserName varchar(255));`;
 
   pool
